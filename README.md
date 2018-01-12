@@ -8,7 +8,7 @@ The rules to the game are:
 * If am empty square has 2 or 3 neighbours which include a male and female, a new pixel is "born" with 50% likelihood
 
 View the live demo at https://digitalsalt.github.io/dating-game-of-life/.
-(Initial conditions are randomly generated)
+(Initial conditions are randomly generated, with each square having a 10% chance of being a live pixel)
 
 * Press `<space>` to pause/unpause the simulation.
 * Press `<n>` to step the simulation while paused.
