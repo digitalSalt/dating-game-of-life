@@ -51,8 +51,12 @@ function initialize_cells(cells) {
 
     for (i = 0; i < cells['rows']; i++) {
         for (j = 0; j < cells['cols']; j++) {
-            if (Math.random() < 0.5) {
-                cells[i][j] = 1;
+            if (Math.random() < 0.1) { //born
+                if (Math.random() < 0.5){ // male
+                    cells[i][j] = 1;
+                } else { // female
+                    cells[i][j] = 2;
+                }
             }
         }
     }
@@ -67,9 +71,11 @@ function draw_cells(context, cells) {
     for (i = 0; i < cells['rows']; i++) {
         for (j = 0; j < cells['cols']; j++) {
             if (cells[i][j] === 1) {
-                context.fillStyle = '#999';
+                context.fillStyle = '#00f';
+            } else if(cells[i][j] === 2) {
+                context.fillStyle = '#f00'
             } else {
-                context.fillStyle = '#DDD';
+                context.fillStyle = '#ddd';
             }
 
             from_top = i * GLOBALS['cell_size'];
@@ -103,7 +109,8 @@ function update(cells) {
 
     for (i = 0; i < cells['rows']; i++) {
         for (j = 0; j < cells['cols']; j++) {
-            live_neighbors = 0;
+            live_male_neighbors = 0;
+            live_female_neighbors = 0;
 
             row_min = Math.max(0, i - 1);
             row_max = Math.min(cells['rows'], i + 2);
@@ -113,23 +120,32 @@ function update(cells) {
             for (k = row_min; k < row_max; k++) {
                 for (l = col_min; l < col_max; l++) {
                     if (old_cells[k][l] === 1) {
-                        live_neighbors++;
+                        live_male_neighbors++;
+                    } else if (old_cells[k][l] === 2){
+                        live_female_neighbors++;
                     }
                 }
             }
 
+            let live_neighbors = live_male_neighbors + live_female_neighbors;
             // cell alive in previous generation
-            if (old_cells[i][j] === 1) {
-                live_neighbors--; // we double counted this one
-
+            if (old_cells[i][j] != 0) {
+                // we double counted this one
+                live_neighbors--;
+                if (old_cells[i][j] == 1){
+                    live_male_neighbors--;
+                } else {
+                    live_female_neighbors--;
+                }
                 // cell dies in next generation
                 if (live_neighbors !== 2 && live_neighbors !== 3) {
                     cells[i][j] = 0;
                 }
             } else {
                 // dead cell comes back to life
-                if (live_neighbors === 3) {
-                    cells[i][j] = 1;
+                if (live_female_neighbors && live_neighbors && live_neighbors < 4) {
+                    if (Math.random() < 0.5)
+                        cells[i][j] = Math.round(1 + Math.random());
                 }
             }
         }
